@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+ 
+		<record id="group_autorisation_manager" model="res.groups">
+			<field name="name">autorisation_manager</field>
+		</record>
+		
+		<record id="permission_group_manager" model="ir.model.access">
+			<field name="name">premission manager</field>
+			<field name="model_id" ref ="model_autorisation_autorisation"/> 
+			<field name="group_id" ref ="autorisation.group_autorisation_manager"/> 
+			<field name="perm_read">1</field>
+			<field name="perm_create">1</field>
+			<field name="perm_write">1</field>
+			<field name="perm_unlink">1</field>
+		</record>		
+
+		<record id="group_autorisation_user" model="res.groups">
+			<field name="name">autorisation_user</field>
+		</record>
+		
+		<record id="permission_group_user" model="ir.model.access">
+			<field name="name">premission user</field>
+			<field name="model_id" ref ="model_autorisation_autorisation"/> 
+			<field name="group_id" ref ="autorisation.group_autorisation_user"/> 
+			<field name="perm_read">1</field>
+			<field name="perm_create">1</field>
+			<field name="perm_write">1</field>
+			<field name="perm_unlink">1</field>
+		</record>
+
+		<record id="permission_approvals_group_manager" model="ir.model.access">
+			<field name="name">premission manager</field>
+			<field name="model_id" ref ="model_leave_validation_status"/> 
+			<field name="group_id" ref ="autorisation.group_autorisation_manager"/> 
+			<field name="perm_read">1</field>
+			<field name="perm_create">1</field>
+			<field name="perm_write">1</field>
+			<field name="perm_unlink">1</field>
+		</record>		 
+ 		
+		
+</odoo>

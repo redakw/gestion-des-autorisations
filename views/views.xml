@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	 <!--   filter    -->
+	<record id="view_mgmtsystem_attendance_filter" model="ir.ui.view">
+    <field name="name">autorisation</field>
+    <field name="model">autorisation.autorisation</field>
+    <field name="arch" type="xml">
+      <search>
+
+          <filter name="leave_approvals_autorisation_ids" string="demandes a traités" domain="[('leave_approvals_autorisation_ids.validating_users','ilike',uid)] "/>
+          <filter name="name" string="Mes demandes" domain="[('user_id','=',uid)]"/>
+
+        </search>
+      </field>
+    </record>
+
+
+    <!--   list view   -->
+ 
+    <record model="ir.ui.view" id="autorisation.list">
+      <field name="name">autorisation list</field>
+      <field name="model">autorisation.autorisation</field>
+	  <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="list">
+			<field name="user_id" string="Name"/>
+			<field name="date_sortie" string="Date Sortie"/>
+			<field name="date_retour" string="Date Retour"/>
+			<field name="type_autorisation"   string="Type d'Atorisation"/>
+			<field name="motif_autorisation" string="Motif"/>
+			<field name="state" string="Status"/>
+            <field name="leave_approvals_autorisation_ids" widget="many2many_tags"/>
+
+        </tree>
+      </field>
+    </record>
+ 
+    <!--   form view   -->
+ 
+    <record model="ir.ui.view" id="autorisation.form">
+      <field name="name">autorisation form</field>
+      <field name="model">autorisation.autorisation</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+            <form string="">
+			
+				<header>
+					<field name="state" widget="statusbar" /> 
+					<button string="Confirmer" name="action_confirm"  type="object" class="oe_highlight"  attrs="{'invisible': ['|',('state', '=', 'confirm'),('state', '=', 'refuser')]}"/>
+					<button string="Refuser" name="action_refuser"  type="object" class="oe_highlight"  attrs="{'invisible': ['|',('state', '=', 'confirm'),('state', '=', 'refuser')]}"/>
+				</header>
+                <sheet>
+				
+						<field name="type_autorisation"   string="Type d'Atorisation"/><br/>
+						<field name="name" string="Name" invisible="1" />
+						<field name="user_id" string="user" />
+					<group attrs="{'invisible': [('type_autorisation', '!=', 'demande_recuperation')]}">
+						<field name="days_recovery" string="Solde recuperation"/>
+					</group>
+					<group>
+						<group>												 
+
+
+							<field name="date_sortie" string="Date Sortie" attrs="{'invisible': ['|',('type_autorisation', '=', 'att_travail'),'|',('type_autorisation', '=', 'att_domiciliation'),'|',('type_autorisation', '=', 'bord_cnss'),('type_autorisation', '=', 'att_salaire')]}"/>
+						</group>
+						<group>
+							<field name="date_retour" string="Date Retour"  attrs="{'invisible': ['|',('type_autorisation', '=', 'att_travail'),'|',('type_autorisation', '=', 'att_domiciliation'),'|',('type_autorisation', '=', 'bord_cnss'),('type_autorisation', '=', 'att_salaire')]}"/>
+						</group>
+						<field name="motif_autorisation" string="Motif"  placeholder="Motif"/>
+
+
+
+
+						<field name="leave_approvals_autorisation" mode="tree" invisible="1">
+                            <tree string="Approbation" editable="bottom">
+                                <field name="validating_users"/>
+                                <field name="name"/>
+                                <field name="validation_status"/>
+                            </tree>
+                        </field>
+
+                        <field name="leave_approvals_autorisation_ids" mode="tree" invisible="1">
+                            <tree string="Approbation" editable="bottom">
+                                <field name="validating_users"/>
+                                <field name="name"/>
+                                <field name="validation_status"/>
+                            </tree>
+                        </field>
+
+
+					</group>
+                 
+                </sheet>
+            </form>
+      </field>
+    </record>
+	
+	
+ 
+    <!-- actions open mes demandes -->
+																
+    <record model="ir.actions.act_window" id="autorisation.action_window">
+      <field name="name">autorisation window</field>
+	  <field name="type">ir.actions.act_window</field>
+      <field name="res_model">autorisation.autorisation</field>
+      <field name="view_mode">tree,form</field>
+      <field name="context">{'search_default_name':1}</field>
+    </record>
+
+    <!-- actions open  demande a traitees -->
+
+    <record model="ir.actions.act_window" id="autorisation.action_window2">
+      <field name="name">autorisation window</field>
+	  <field name="type">ir.actions.act_window</field>
+      <field name="res_model">autorisation.autorisation</field>
+      <field name="view_mode">tree,form</field>
+	  <field name="context">{'search_default_leave_approvals_autorisation_ids':1}</field>
+    </record>
+
+    <!-- Top menu item -->
+ 
+    <menuitem name="Autorisations" id="autorisation_parent" sequence="1"/>
+ 
+    <!-- menu categories -->
+ 
+    <menuitem name="Mes demandes" id="autorisation_menu_1" parent="autorisation_parent" action="autorisation.action_window"/>
+    <menuitem name="Demandes a traitées" id="autorisation_menu_2" parent="autorisation_parent" action="autorisation.action_window2" sequence="20"/>
+
+ 
+    <!--   form view employee  -->
+
+    <record model="ir.ui.view" id="Approvals_employee">
+      <field name="name">Approvals employee form</field>
+      <field name="model">hr.employee</field>
+      <field name="inherit_id" ref="hr.view_employee_form"/>
+      <field name="arch" type="xml">
+ 
+				
+			<field  name="user_id" position="before">
+			
+				<field name="leave_approvals_emp" mode="tree" groups="autorisation.group_autorisation_manager">
+					<tree string="Users"  editable="bottom">
+						<field name="validating_users"/>
+						<field name="name" invisible ="1"/>
+						<!-- <field name="validation_status"/> -->
+					</tree>
+				</field>
+				
+			</field>
+	
+ 
+      </field>
+    </record>
+
+	<!-- tableau de niveau d'aprobation au niveau du model res.users/> -->
+    <record id="base_view_users_form_inherit_id" model="ir.ui.view">
+        <field name="name">res.users.form.inherit_id</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <field name="signature" position="after">
+                <field name="leave_approvals_emp_ids" mode="tree" groups="autorisation.group_autorisation_manager">
+					<tree string="Users"  editable="bottom">
+						<field name="validating_users"/>
+						<field name="name" invisible ="1"/>
+						<!-- <field name="validation_status"/> -->
+					</tree>
+				</field>
+            </field>
+        </field>
+    </record>
+</odoo>
